@@ -25,10 +25,8 @@ public class ProjectController {
     @GetMapping(value = "/api/projects/{projectId}")
     public Project getProjectById(@PathVariable String projectId){
         System.out.println("Getting project with ID: {}" + projectId);
+        checkId(projectId);
         Optional OptionalProject = projectRepository.findById(projectId);
-        if (OptionalProject.isPresent() && projectRepository.existsById(projectId)) {
-            return (Project) OptionalProject.get();
-        }
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id Not Found", new FileNotFoundException());
     }
 
@@ -41,9 +39,7 @@ public class ProjectController {
     @PutMapping(value = "/api/projects/{projectId}")
     public Project updateProject(@PathVariable String projectId, @RequestBody Project project) {
         System.out.println("Updating project with ID: {}" + projectId);
-        if (!projectRepository.existsById(projectId)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id Not Found", new FileNotFoundException());
-        }
+        checkId(projectId);
         project.setId(projectId);
         return projectRepository.save(project);
     }
@@ -51,9 +47,14 @@ public class ProjectController {
     @DeleteMapping(value = "/api/projects/{projectId}")
     public void deleteProject(@PathVariable String projectId) {
         System.out.println("Deleting project with ID: {}" + projectId);
+        checkId(projectId);
+        projectRepository.deleteById(projectId);
+    }
+
+    public void checkId(String projectId) {
         if (!projectRepository.existsById(projectId)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id Not Found", new FileNotFoundException());
         }
-        projectRepository.deleteById(projectId);
     }
+
 }
