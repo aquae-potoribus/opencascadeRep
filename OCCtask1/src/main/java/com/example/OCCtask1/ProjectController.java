@@ -27,13 +27,16 @@ public class ProjectController {
         System.out.println("Getting project with ID: {}" + projectId);
         checkId(projectId);
         Optional OptionalProject = projectRepository.findById(projectId);
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id Not Found", new FileNotFoundException());
+        if (!OptionalProject.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "not find document", new FileNotFoundException());
+        }
+        return (Project) OptionalProject.get();
     }
 
     @PostMapping(value = "/api/projects")
     public Project addProject(@RequestBody Project prj) {
-        System.out.println("Saving project.");
-        return projectRepository.save(prj);
+        System.out.println("insert project.");
+        return projectRepository.insert(prj);
     }
 
     @PutMapping(value = "/api/projects/{projectId}")
