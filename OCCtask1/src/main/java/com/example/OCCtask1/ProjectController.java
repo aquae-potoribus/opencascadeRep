@@ -24,13 +24,12 @@ public class ProjectController {
 
     @GetMapping(value = "/api/projects/{projectId}")
     public Project getProjectById(@PathVariable String projectId){
-        System.out.println("Getting project with ID: {}" + projectId);
-        checkId(projectId);
-        Optional OptionalProject = projectRepository.findById(projectId);
-        if (!OptionalProject.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "not find document", new FileNotFoundException());
+        System.out.println("Getting project with ID: " + projectId);
+        Optional<Project> optionalProject = projectRepository.findById(projectId);
+        if (!optionalProject.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Not found project with id=%s", projectId));
         }
-        return (Project) OptionalProject.get();
+        return optionalProject.get();
     }
 
     @PostMapping(value = "/api/projects")
@@ -41,7 +40,7 @@ public class ProjectController {
 
     @PutMapping(value = "/api/projects/{projectId}")
     public Project updateProject(@PathVariable String projectId, @RequestBody Project project) {
-        System.out.println("Updating project with ID: {}" + projectId);
+        System.out.println("Updating project with ID: " + projectId);
         checkId(projectId);
         project.setId(projectId);
         return projectRepository.save(project);
@@ -49,14 +48,14 @@ public class ProjectController {
 
     @DeleteMapping(value = "/api/projects/{projectId}")
     public void deleteProject(@PathVariable String projectId) {
-        System.out.println("Deleting project with ID: {}" + projectId);
+        System.out.println("Deleting project with ID: " + projectId);
         checkId(projectId);
         projectRepository.deleteById(projectId);
     }
 
     public void checkId(String projectId) {
-        if (!projectRepository.existsById(projectId)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id Not Found", new FileNotFoundException());
+        if (!this.projectRepository.existsById(projectId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Not found project with id=%s", projectId));
         }
     }
 
