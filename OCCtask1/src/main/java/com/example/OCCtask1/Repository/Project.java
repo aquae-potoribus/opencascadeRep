@@ -1,4 +1,4 @@
-package com.example.OCCtask1;
+package com.example.OCCtask1.Repository;
 
 import lombok.Getter;
 import lombok.Setter;
